@@ -6,11 +6,9 @@ package com.justdoit.services;
 
 import com.justdoit.PersistenceManager;
 import com.justdoit.dto.ProyectoDTO;
-import com.justdoit.entity.Emprendedor;
 import com.justdoit.entity.Proyecto;
 import com.justdoit.models.ActualizacionProyecto;
 import com.justdoit.models.EstadoDeProyecto;
-import java.text.ParseException;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
