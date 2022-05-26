@@ -140,19 +140,36 @@ public class ServicioDonante {
             donante = (Donante) q.getSingleResult();
             q = entityManager.createQuery("SELECT p FROM Proyecto p WHERE p.id = '" + donacionProyecto.getIdProyecto() + "'");
             proyecto = (Proyecto) q.getSingleResult();
-            proyecto.setValorActual(proyecto.getValorActual() + donacionProyecto.getValor());
+            
+            if ("FINANCIAMIENTO".equals(proyecto.getEstado())) {
+                if (donacionProyecto.getValor() <= (proyecto.getValorObjetivo() - proyecto.getValorActual())) {
+                    proyecto.setValorActual(proyecto.getValorActual() + donacionProyecto.getValor());
+                } else if(proyecto.getValorObjetivo() != proyecto.getValorActual()){
+                    rta.put("Informacion", "El valor es superior a lo permitido");
+                    return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(rta.toJSONString()).build();
+                }
+            } else {
+                rta.put("Informacion", "El proyecto ya no está en etapa de financiamiento");
+                return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(rta.toJSONString()).build();
+            }
+            
         } catch (Exception e) {
             rta.put("Informacion", "Donante o proyecto no encontrado");
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(rta.toJSONString()).build();
         }
-        
+
         try {
+            if (proyecto.getValorObjetivo() == proyecto.getValorActual()) {
+                proyecto.setEstado("EN PROCESO");
+                rta.put("Informacion", "Donacion realizada correctamente, Tu donación hizo que el proyecto completara su objetivo ¡Gracias!");
+            } else {
+                rta.put("Informacion", "Donacion realizada correctamente, ¡Gracias por apoyar el proyecto!");
+            }
             entityManager.getTransaction().begin();
             entityManager.merge(proyecto);
             entityManager.getTransaction().commit();
             rta.put("proyecto_id", proyecto.getId());
             rta.put("valor_donado", donacionProyecto.getValor());
-            rta.put("Informacion", "Donacion realizada correctamente, ¡Gracias por apoyar el proyecto!");
         } catch (Throwable t) {
             t.printStackTrace();
             if (entityManager.getTransaction().isActive()) {

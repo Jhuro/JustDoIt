@@ -56,7 +56,7 @@ public class ServicioProyecto {
         } catch (Exception e) {
             return Response.status(200).header("Access-Control-Allow-Origin", "*").entity(rta.toJSONString()).build();
         }
-        
+
         q = entityManager.createQuery("SELECT p FROM Proyecto p WHERE p.emprendedor_id = '" + emprendedor_id + "'");
         List<Proyecto> proyectos = q.getResultList();
 
@@ -106,7 +106,7 @@ public class ServicioProyecto {
     @Path("/actualizar")
     @Produces(MediaType.APPLICATION_JSON)
     public Response actualizarProyecto(ActualizacionProyecto actualizacionProyecto) {
-        Query q = entityManager.createQuery("SELECT p FROM Proyecto p WHERE p.id = " + actualizacionProyecto.getId());
+        Query q = entityManager.createQuery("SELECT p FROM Proyecto p WHERE p.id = '" + actualizacionProyecto.getId() + "'");
         JSONObject rta = new JSONObject();
         Proyecto proyecto = null;
         try {
